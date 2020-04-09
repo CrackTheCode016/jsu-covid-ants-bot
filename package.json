@@ -1,0 +1,23 @@
+{
+  "name": "covid-19-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/cron": "^1.7.2",
+    "@types/dotenv": "^8.2.0",
+    "@types/node-fetch": "^2.5.5",
+    "cron": "^1.8.2",
+    "csv-parser": "^2.3.2",
+    "dotenv": "^8.2.0",
+    "node-fetch": "^2.6.0",
+    "symbol-archive-sdk": "0.1.4",
+    "symbol-sdk": "^0.17.3"
+  }
+}
