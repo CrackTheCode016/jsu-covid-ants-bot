@@ -1,5 +1,5 @@
 {
-  "name": "covid-19-bot",
+  "name": "covid-jsu-symbol-bot",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -17,7 +17,7 @@
     "csv-parser": "^2.3.2",
     "dotenv": "^8.2.0",
     "node-fetch": "^2.6.0",
-    "symbol-archive-sdk": "0.1.4",
-    "symbol-sdk": "^0.17.3"
+    "ants-protocol-sdk": "0.0.2",
+    "symbol-sdk": "0.17.5-alpha-202004140932"
   }
 }

@@ -3,7 +3,7 @@ import csvParser, * as parser from 'csv-parser'
 import { Readable } from 'stream'
 import * as cron from 'cron'
 import * as fetch from 'node-fetch'
-import { DataReport, ReportDataPoint, ArchiveHttp } from 'symbol-archive-sdk'
+import { DataReport, ReportDataPoint, ArchiveHttp } from 'ants-protocol-sdk'
 import { TransactionAnnounceResponse, Account, NetworkType } from 'symbol-sdk'
 
 export class CovidReportingBot {
@@ -13,11 +13,12 @@ export class CovidReportingBot {
     private account: Account
     private formatMonth = (date: Date) => {
         const month = (date.getMonth() + 1).toString()
+        console.log(month.charAt(0))
         return month.charAt(0) == '1' ? month.toString() : `0${month.toString()}`
     }
     private formatDay = (date: Date) => {
         const day = (date.getDate()).toString()
-        return parseInt(day.charAt(0)) > 10 ? day.toString() : `0${day.toString()}`
+        return parseInt(day) > 10 ? day.toString() : `0${day.toString()}`
     }
 
     constructor(
@@ -50,20 +51,20 @@ export class CovidReportingBot {
         let totalGlobalDeathCount: number = 0
         let totalGlobalRecovered: number = 0
         let totalGlobalActive: number = 0
-        let datapoints: ReportDataPoint[] = []
         jhuResponse.forEach((report) => {
-            datapoints.push(
-                ReportDataPoint
-                    .fromInterfaceToDataPoint<ICOVID19GeneralReport>('covidCountryReport', report))
             totalGlobalDeathCount += parseInt(report.deaths.toString())
             totalGlobalInfected += parseInt(report.confirmed.toString())
             totalGlobalRecovered += parseInt(report.recovered.toString())
         })
+        const perCountryReports = ReportDataPoint.fromInterfaceToDataPoint('covidCountryReport', jhuResponse, true)
+
+        console.log(perCountryReports)
+
         const totalGlobalInfectedPoint = new ReportDataPoint('totalGlobalInfected', totalGlobalInfected)
         const totalGlobalDeathCountPoint = new ReportDataPoint('totalGlobalDeathCount', totalGlobalDeathCount)
         const totalGlobalRecoveredPoint = new ReportDataPoint('totalGlobalRecovered', totalGlobalRecovered)
         const totalGlobalActivePoint = new ReportDataPoint('totalGlobalActive', totalGlobalActive)
-        const finalPoints: ReportDataPoint[] = [totalGlobalInfectedPoint, totalGlobalDeathCountPoint, totalGlobalRecoveredPoint, totalGlobalActivePoint].concat(datapoints)
+        const finalPoints: ReportDataPoint[] = [totalGlobalInfectedPoint, totalGlobalDeathCountPoint, totalGlobalRecoveredPoint, totalGlobalActivePoint, perCountryReports]
         const dataReport = new DataReport(
             'covid',
             'https://github.com/CSSEGISandData/COVID-19',
