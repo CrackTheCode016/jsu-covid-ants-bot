@@ -4,9 +4,6 @@ FROM node:12.16.2-alpine
 WORKDIR /usr/src/app
 # Only copy the package.json file to work directory
 
-# Install tsc
-RUN npm install tsc -g
-
 # Install typescript
 RUN npm install typescript -g
 
