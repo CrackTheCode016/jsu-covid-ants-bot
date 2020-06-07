@@ -17,7 +17,7 @@
     "csv-parser": "^2.3.2",
     "dotenv": "^8.2.0",
     "node-fetch": "^2.6.0",
-    "ants-protocol-sdk": "0.0.2",
-    "symbol-sdk": "0.17.5-alpha-202004140932"
+    "ants-protocol-sdk": "0.0.4",
+    "symbol-sdk": "0.19.2"
   }
 }
