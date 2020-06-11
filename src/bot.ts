@@ -17,9 +17,9 @@ export class CovidReportingBot {
         return month.charAt(0) == '1' ? month.toString() : `0${month.toString()}`
     }
     private formatDay = (date: Date) => {
-        const day = (date.getDate() - 1).toString()
+        const day = (date.getDate()).toString()
         console.log(day)
-        return parseInt(day) > 10 ? day.toString() : `${day.toString()}`
+        return parseInt(day) > 10 ? day.toString() : `0${day.toString()}`
     }
 
     constructor(
