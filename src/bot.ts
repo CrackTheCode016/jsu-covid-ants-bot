@@ -3,13 +3,13 @@ import csvParser, * as parser from 'csv-parser'
 import { Readable } from 'stream'
 import * as cron from 'cron'
 import * as fetch from 'node-fetch'
-import { DataReport, ReportDataPoint, ArchiveHttp } from 'ants-protocol-sdk'
-import { TransactionAnnounceResponse, Account, NetworkType } from 'symbol-sdk'
+import { DataReport, ReportDataPoint, ArchiveHttp, ReportHttp } from 'ants-protocol-sdk'
+import { TransactionAnnounceResponse, Account, NetworkType, RepositoryFactoryHttp } from 'symbol-sdk'
 
 export class CovidReportingBot {
 
     private jhuBaseUrl = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/'
-    private archiveHttp: ArchiveHttp
+    private reportHttp: ReportHttp
     private account: Account
     private formatMonth = (date: Date) => {
         const month = (date.getMonth() + 1).toString()
@@ -17,15 +17,17 @@ export class CovidReportingBot {
         return month.charAt(0) == '1' ? month.toString() : `0${month.toString()}`
     }
     private formatDay = (date: Date) => {
-        const day = (date.getDate()).toString()
-        return parseInt(day) > 10 ? day.toString() : `0${day.toString()}`
+        const day = (date.getDate() - 1).toString()
+        console.log(day)
+        return parseInt(day) > 10 ? day.toString() : `${day.toString()}`
     }
 
     constructor(
         nodeUrl: string,
         apiKey: string
     ) {
-        this.archiveHttp = new ArchiveHttp(nodeUrl)
+        const repositoryFactor = new RepositoryFactoryHttp(nodeUrl)
+        this.reportHttp = new ReportHttp(repositoryFactor)
         this.account = Account.createFromPrivateKey(apiKey, NetworkType.TEST_NET)
     }
 
@@ -46,7 +48,7 @@ export class CovidReportingBot {
         }).start()
     }
 
-    private sendReportToNode(jhuResponse: ICOVID19GeneralReport[]): Promise<TransactionAnnounceResponse> {
+    private sendReportToNode(jhuResponse: ICOVID19GeneralReport[]) {
         let totalGlobalInfected: number = 0
         let totalGlobalDeathCount: number = 0
         let totalGlobalRecovered: number = 0
@@ -56,10 +58,8 @@ export class CovidReportingBot {
             totalGlobalInfected += parseInt(report.confirmed.toString())
             totalGlobalRecovered += parseInt(report.recovered.toString())
         })
+        totalGlobalActive = totalGlobalInfected - totalGlobalRecovered
         const perCountryReports = ReportDataPoint.fromInterfaceToDataPoint('covidCountryReport', jhuResponse, true)
-
-        console.log(perCountryReports)
-
         const totalGlobalInfectedPoint = new ReportDataPoint('totalGlobalInfected', totalGlobalInfected)
         const totalGlobalDeathCountPoint = new ReportDataPoint('totalGlobalDeathCount', totalGlobalDeathCount)
         const totalGlobalRecoveredPoint = new ReportDataPoint('totalGlobalRecovered', totalGlobalRecovered)
@@ -70,9 +70,8 @@ export class CovidReportingBot {
             'https://github.com/CSSEGISandData/COVID-19',
             finalPoints,
             this.account.address)
-
-        return this.archiveHttp
-            .announceDataThatFollowsSchema(
+        return this.reportHttp
+            .announceReportToArchive(
                 this.account,
                 dataReport,
                 'covid',

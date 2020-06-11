@@ -5,7 +5,7 @@ env.config()
 
 console.log(process.env.KEY)
 const bot = new CovidReportingBot(
-    'http://198.199.80.167:3000',
+    'http://178.128.184.107:3000',
     process.env.KEY!)
 
 bot.start()
