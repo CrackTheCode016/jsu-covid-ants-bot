@@ -16,7 +16,7 @@
     "cron": "^1.8.2",
     "csv-parser": "^2.3.2",
     "dotenv": "^8.2.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "ants-protocol-sdk": "0.0.6",
     "symbol-sdk": "0.19.2"
   }
